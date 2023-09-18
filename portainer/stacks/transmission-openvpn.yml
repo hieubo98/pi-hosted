@@ -1,0 +1,30 @@
+version: '3.3'
+services:
+    transmission:
+        cap_add:
+            - NET_ADMIN
+        restart: unless-stopped
+        volumes:
+            - /data/usenet:/data
+            - /portainer/Files/AppData/Config/transmission-openvpn:/config
+            - /portainer/Files/AppData/Config/transmission-openvpn:/etc/openvpn/custom/
+        environment:
+            - OPENVPN_PROVIDER=custom
+            - OPENVPN_CONFIG=xxxxx
+            - OPENVPN_USERNAME=xxxx
+            - OPENVPN_PASSWORD=xxxxxx
+            - LOCAL_NETWORK=192.168.1.0/24
+        logging:
+            driver: json-file
+            options:
+                max-size: 10m
+        ports:
+            - 9091:9091
+        image: haugene/transmission-openvpn
+
+    transmission-openvpn-proxy:
+        links: 
+            - transmission
+        ports:
+            - 9090:8080
+        image: haugene/transmission-openvpn-proxy
